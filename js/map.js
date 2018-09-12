@@ -55,7 +55,7 @@ var generateArrayOfNumbers = function (arrayLength) {
   var array = [];
 
   for (var l = 0; l < arrayLength; l++) {
-    array[l] = l;
+    array[l] = l + 1;
   }
 
   return array;
