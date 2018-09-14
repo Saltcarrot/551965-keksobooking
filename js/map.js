@@ -23,6 +23,20 @@ var map = document.querySelector('.map');
 var mapPin = map.querySelector('.map__pin');
 var form = document.querySelector('.ad-form');
 var formElements = form.elements;
+var filter = document.querySelector('.map__filters');
+var filterElements = filter.elements;
+
+var disableFilters = function () {
+  for (var i = 0; i < filterElements.length; ++i) {
+    filterElements[i].disabled = true;
+  }
+};
+
+var activateFilters = function () {
+  for (var i = 0; i < filterElements.length; ++i) {
+    filterElements[i].disabled = false;
+  }
+};
 
 var disableForm = function () {
   for (var i = 0; i < formElements.length; ++i) {
@@ -43,6 +57,7 @@ var activateObject = function (element, className) {
 var popupMouseupHandle = function () {
   activateObject(map, 'map--faded');
   activateObject(form, 'ad-form--disabled');
+  activateFilters();
   activateForm();
 
   var ads = generateAds();
@@ -246,5 +261,6 @@ var renderAdCard = function (ad) {
 };
 
 disableForm();
+disableFilters();
 
 mapPin.addEventListener('mouseup', popupMouseupHandle);
