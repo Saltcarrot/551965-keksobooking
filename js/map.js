@@ -19,22 +19,46 @@ var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 
-// Активировать карту
-var activateMap = function () {
-  document.querySelector('.map').classList.remove('map--faded');
+var map = document.querySelector('.map');
+var mapPin = map.querySelector('.map__pin');
+var form = document.querySelector('.ad-form');
+var formElements = form.elements;
+
+var disableForm = function () {
+  for (var i = 0; i < formElements.length; ++i) {
+    formElements[i].disabled = true;
+  }
 };
 
-// Взять любое число из массива
+var activateForm = function () {
+  for (var i = 0; i < formElements.length; ++i) {
+    formElements[i].disabled = false;
+  }
+};
+
+var activateObject = function (element, className) {
+  element.classList.remove(className);
+};
+
+var popupMouseupHandle = function () {
+  activateObject(map, 'map--faded');
+  activateObject(form, 'ad-form--disabled');
+  activateForm();
+
+  var ads = generateAds();
+
+  addPins(ads);
+  renderAdCard(ads[0]);
+};
+
 var getRandomValueFromArray = function (arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 };
 
-// Сгенерировать число в диапазоне от MIN до MAX
 var getRandomValue = function (max, min) {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
-// Перетасовать элементы в массиве
 var shuffleArray = function (array) {
   for (var i = array.length - 1; i >= 0; i--) {
     var randomIndex = Math.floor(Math.random() * (i + 1));
@@ -45,12 +69,10 @@ var shuffleArray = function (array) {
   return array;
 };
 
-// Создать массив определенной длины
 var generateArrayOfAGivenLength = function (array) {
   return shuffleArray(array).slice(0, getRandomValue(array.length, 1));
 };
 
-// Сгенерировать массив определенной длины
 var generateArrayOfNumbers = function (arrayLength) {
   var array = [];
 
@@ -61,14 +83,12 @@ var generateArrayOfNumbers = function (arrayLength) {
   return array;
 };
 
-// Удалить дочерние элементы в узле
 var removeChilds = function (element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
 };
 
-// Перевести тип жилья на русский
 var translateType = function (type) {
   switch (type) {
     case 'flat':
@@ -84,7 +104,6 @@ var translateType = function (type) {
   }
 };
 
-// Сгенерировать массив предложений
 var generateAds = function () {
   var maxUserNumber = 8;
   var maxPrice = 1000000;
@@ -132,7 +151,6 @@ var generateAds = function () {
   return ads;
 };
 
-// Создать элемент списка фич
 var createIconFeature = function (feature) {
   var iconFeature = document.createElement('li');
 
@@ -142,7 +160,6 @@ var createIconFeature = function (feature) {
   return iconFeature;
 };
 
-// Сгенерировать фичи на основе соответствующего массива
 var generateIconsFeatures = function (arrayFeatures) {
   var fragment = document.createDocumentFragment();
 
@@ -154,7 +171,6 @@ var generateIconsFeatures = function (arrayFeatures) {
   return fragment;
 };
 
-// Создать элемент "списка" фотографий
 var createPhoto = function (photo) {
   var photoEl = document.createElement('img');
 
@@ -167,7 +183,6 @@ var createPhoto = function (photo) {
   return photoEl;
 };
 
-// Сгенерировать фотографии на основе соответствующего массива
 var generatePhotos = function (photosArray) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < photosArray.length; i++) {
@@ -177,7 +192,6 @@ var generatePhotos = function (photosArray) {
   return fragment;
 };
 
-// Отредактировать содержимое клонируемого узла МАРКЕРА ОБЪЯВЛЕНИЯ
 var renderPin = function (ad, pinTemplate) {
   var clone = pinTemplate.cloneNode(true);
 
@@ -193,7 +207,6 @@ var renderPin = function (ad, pinTemplate) {
   return clone;
 };
 
-// Добавить метки на карту
 var addPins = function (ads) {
   var pinTemplate = document.querySelector('#pin').content;
   var fragment = document.createDocumentFragment();
@@ -205,7 +218,6 @@ var addPins = function (ads) {
   document.querySelector('.map__pins').appendChild(fragment);
 };
 
-// Отредактировать содержимое клонируемого узла КАРТОЧКИ ОБЪЯВЛЕНИЯ
 var renderAdCard = function (ad) {
   var clone = document.querySelector('#card').content.querySelector('.map__card').cloneNode(true);
   var searchFilter = document.querySelector('.map__filters-container');
@@ -233,9 +245,6 @@ var renderAdCard = function (ad) {
   return document.querySelector('.map').insertBefore(clone, searchFilter);
 };
 
-activateMap();
+disableForm();
 
-var ads = generateAds();
-
-addPins(ads);
-renderAdCard(ads[0]);
+mapPin.addEventListener('mouseup', popupMouseupHandle);
